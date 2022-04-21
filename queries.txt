@@ -1,0 +1,103 @@
+Query 1:Top 10 Artists in Tracks Contribution
+
+SELECT B.NAME AS ARTISTS,
+       COUNT(C.TrackId) AS NO_TRACKS
+FROM ALBUM A
+INNER JOIN Artist B ON A.ArtistId=B.ArtistId
+INNER JOIN TRACK C ON A.AlbumId=C.AlbumId
+GROUP BY B.NAME
+ORDER BY 2 DESC
+LIMIT 10;
+
+QUERY 2:Top 10 Artists in Albums Contribution
+
+SELECT B.NAME AS ARTIST_NAME,
+       COUNT(1) AS ALBUM_COUNT
+FROM ALBUM A
+INNER JOIN Artist B ON A.ArtistId=B.ArtistId
+GROUP BY B.NAME
+ORDER BY 2 DESC
+LIMIT 10;
+
+QUERY 3:Top 10 common Genres
+
+SELECT C.Name AS GENRES,
+       COUNT(1) AS SONGES_PER_GENRE
+FROM TRACK A
+INNER JOIN ALBUM B ON A.AlbumId=B.AlbumId
+INNER JOIN GENRE C ON A.GenreId=C.GenreId
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 10;
+  
+QUERY 4:Common Tracks Media Types
+SELECT C.Name AS MediaType,
+       count(A.Name) AS Tracks_Count
+FROM TRACK A
+INNER JOIN ALBUM B ON A.AlbumId=B.AlbumId
+INNER JOIN MediaType C ON A.MediaTypeId=C.MediaTypeId
+GROUP BY 1
+ORDER BY 2 DESC;
+
+QUERY 5:Best Selling Artists
+
+SELECT D.NAME AS ArtisT_NAME,
+       SUM(A.Quantity*A.UnitPrice) AS Total_Sales
+FROM InvoiceLine A
+INNER JOIN TRACK B ON A.TrackId=B.TrackId
+INNER JOIN ALBUM C ON B.AlbumId=C.AlbumId
+INNER JOIN ARTIST D ON C.AlbumId=D.ArtistId
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 10;
+
+QUERY 6:Best Selling Genres
+
+SELECT B.Name AS GENRES,
+       ROUND(SUM(C.Quantity*C.UnitPrice)) AS Total_Sales
+FROM TRACK A
+INNER JOIN GENRE B ON A.GenreId=B.GenreId
+INNER JOIN InvoiceLine C ON A.TrackId=C.TrackId
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 10;
+
+QUERY 7:Top Loyal Customers
+
+SELECT A.FirstName || " "|| A.LastName AS CUSTOMER,
+       B.TOTAL_PURCHASES
+FROM Customer A
+INNER JOIN
+  (SELECT A.CustomerId AS CUSTOMERS,
+          SUM(B.TOTAL) AS TOTAL_PURCHASES
+   FROM CUSTOMER A
+   INNER JOIN INVOICE B ON A.CustomerId=B.CustomerId
+   GROUP BY 1
+   ORDER BY 2 DESC) B ON A.CustomerId=B.CUSTOMERS
+LIMIT 10;
+
+QUERY 8:Total Sales in the last 5 years
+
+SELECT STRFTIME('%Y', A.InvoiceDate) AS YEARS,ROUND(SUM(A.TOTAL)) AS TOTAL_SALES FROM INVOICE A 
+INNER JOIN InvoiceLine B ON A.InvoiceId=B.InvoiceId 
+GROUP BY 1
+ORDER BY 2 DESC; 
+
+QUERY 9:Total Sales Per Months
+
+SELECT STRFTIME('%Y-%m', A.InvoiceDate) AS MONTHS,
+       SUM(A.TOTAL) AS TOTAL_SALES
+FROM INVOICE A
+INNER JOIN InvoiceLine B ON A.InvoiceId=B.InvoiceId
+GROUP BY 1
+ORDER BY 1 DESC;
+
+QUERY 10:Best Selling Cities
+
+SELECT A.BillingCity,
+       ROUND(SUM(A.TOTAL)) AS STORE_SALES
+FROM INVOICE A
+INNER JOIN InvoiceLine B ON A.InvoiceId=B.InvoiceId
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 10;
